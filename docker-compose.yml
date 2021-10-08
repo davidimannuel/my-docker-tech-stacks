@@ -1,0 +1,40 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  postgres:
+    image: postgres:14.0-alpine3.14
+    restart: always
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+    - /home/david/Dockers/postgres/data:/var/lib/postgresql/data
+    ports:
+    - 5432:5432 #local_machine_port:internal_docker_container_port
+    # networks: 
+    # - docker_stack_network 
+  mongodb:
+    image: mongo:5.0.3
+    restart: always
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:root
+      MONGO_INITDB_ROOT_PASSWORD:mongo
+      MONGO_INITDB_DATABASE:admin
+    volumes:
+    - /home/david/Dockers/mongodb/data:/data/db
+    ports:
+    - 27017:27017 #local_machine_port:internal_docker_container_port
+    # networks: 
+    #   - docker_stack_network 
+  redis:
+    image: redis:alpine3.14
+    restart: always
+    container_name: redis
+    ports:
+    - 6379:6379 #local_machine_port:internal_container_port
+    # networks: 
+    #   - docker_stack_network 
+# networks:
+#   docker_stack_network:

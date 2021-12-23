@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-    - /home/david/Dockers/postgres/data:/var/lib/postgresql/data
+    - /Users/davidimannuel/Codes/docker:/var/lib/postgresql/data #local_machine:internal_docker
     ports:
     - 5432:5432 #local_machine_port:internal_docker_container_port
     # networks: 
@@ -19,11 +19,11 @@ services:
     restart: always
     container_name: mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME:root
-      MONGO_INITDB_ROOT_PASSWORD:mongo
-      MONGO_INITDB_DATABASE:admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: admin
     volumes:
-    - /home/david/Dockers/mongodb/data:/data/db
+    - /Users/davidimannuel/Codes/docker:/data/db
     ports:
     - 27017:27017 #local_machine_port:internal_docker_container_port
     # networks: 
@@ -34,6 +34,14 @@ services:
     container_name: redis
     ports:
     - 6379:6379 #local_machine_port:internal_container_port
+    # networks: 
+    #   - docker_stack_network 
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    restart: always
+    container_name: rabbitmq
+    ports:
+    - 15672:15672 #local_machine_port:internal_container_port
     # networks: 
     #   - docker_stack_network 
 # networks:

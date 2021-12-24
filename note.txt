@@ -1,0 +1,2 @@
+run redis local
+- docker run -it redis:alpine3.14 redis-cli -h 127.0.0.1

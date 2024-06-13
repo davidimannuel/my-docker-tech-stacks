@@ -62,4 +62,29 @@ services:
     expose:
       - '6379'
     volumes: 
-      - ./docker_volumes/redis:/data
+      - ./docker_volumes/data/redis:/data
+  
+  # mongodb:
+  #   image: mongo:5.0.3
+  #   restart: always
+  #   container_name: mongodb
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: mongo
+  #     MONGO_INITDB_DATABASE: admin
+  #   volumes:
+  #   - ./docker_volumes/mongo/data:/data/db
+  #   ports:
+  #   - 27017:27017
+
+  # username/password : guest/guest
+  # rabbitmq:
+  #   image: rabbitmq:3.10.5-management
+  #   restart: always
+  #   container_name: rabbitmq
+  #   ports:
+  #   - 5672:5672
+  #   - 15672:15672
+  #   volumes:
+  #       - ./docker_volumes/rabbitmq/data/:/var/lib/rabbitmq/
+  #       - ./docker_volumes/rabbitmq/log/:/var/log/rabbitmq

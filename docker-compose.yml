@@ -1,7 +1,7 @@
 version: "3.9"  # optional since v1.27.0
 services:
   postgres:
-    image: postgres:14.0-alpine3.14
+    image: postgres:14.1-alpine
     restart: always
     container_name: postgres
     environment:
@@ -9,46 +9,57 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-    - ~/Dockers/postgresql:/var/lib/postgresql/data #local_machine:internal_docker
+    - ./docker_volumes/postgres/data:/var/lib/postgresql/data #local_machine:internal_docker
     ports:
     - 5432:5432 #local_machine_port:internal_docker_container_port
-    # networks: 
-    # - docker_stack_network 
-  mongodb:
-    image: mongo:5.0.3
-    restart: always
-    container_name: mongodb
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.2
+    container_name: zookeeper
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: mongo
-      MONGO_INITDB_DATABASE: admin
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     volumes:
-    - ~/Dockers/mongo:/data/db
+      - ./docker_volumes/zookeeper/data:/var/lib/zookeeper/data
+      - ./docker_volumes/zookeeper/log:/var/lib/zookeeper/log
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.3.2
+    container_name: kafka
     ports:
-    - 27017:27017 #local_machine_port:internal_docker_container_port
-    # networks: 
-    #   - docker_stack_network 
+      # To learn about configuring Kafka for access across networks see
+      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://go_order_repayment_broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    volumes:
+      - ./docker_volumes/kafka:/var/lib/kafka/data
+    
+  kafka-ui:
+    image: provectuslabs/kafka-ui:53a6553765a806eda9905c43bfcfe09da6812035
+    restart: always
+    ports:
+      - 9080:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+  
   redis:
-    image: redis:alpine3.14
+    image: redis:7.2.3-alpine
     restart: always
-    container_name: redis
     ports:
-    - 6379:6379 #local_machine_port:internal_container_port
-    # networks: 
-    #   - docker_stack_network 
-  rabbitmq:
-    # image: rabbitmq:3.10.5-management
-    image: rabbitmq-delayed-msg
-    restart: always
-    container_name: rabbitmq
-    ports:
-    - 5672:5672
-    - 15672:15672 #local_machine_port:internal_container_port
-    volumes:
-        - ~/Dockers/rabbitmq/data/:/var/lib/rabbitmq/
-        - ~/Dockers/rabbitmq/log/:/var/log/rabbitmq
-        # - ~/Dockers/rabbitmq/plugins:/opt/rabbitmq/plugins (make error)
-    # networks: 
-    #   - docker_stack_network 
-# networks:
-#   docker_stack_network:
+      - '6379:6379'
+    expose:
+      - '6379'
+    volumes: 
+      - ./docker_volumes/redis:/data

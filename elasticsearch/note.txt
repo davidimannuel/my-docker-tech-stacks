@@ -1,0 +1,13 @@
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+# secrets
+Copy the generated elastic password and enrollment token. 
+These credentials are only shown when you start Elasticsearch for the first time. 
+You can regenerate the credentials using the following commands.
+docker exec -it elastic-search /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+docker exec -it elastic-search /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+
+# copy http certs
+docker cp elastic-search:/usr/share/elasticsearch/config/certs/http_ca.crt ./elasticsearch/certs
+
+#current info  
+password = yI2IJVGThpiTgQTk5=4Q

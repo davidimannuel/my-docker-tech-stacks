@@ -1,4 +1,4 @@
-version: "3.9"  # optional since v1.27.0
+# version: "3.9"  # optional since v1.27.0
 services:
   postgres:
     image: postgres:14.1-alpine
@@ -45,6 +45,7 @@ services:
     
   kafka-ui:
     image: provectuslabs/kafka-ui:53a6553765a806eda9905c43bfcfe09da6812035
+    container_name: kafka-ui
     restart: always
     ports:
       - 9080:8080
@@ -54,6 +55,12 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
   
+  elastic-search:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: elastic-search
+    ports:
+      - 9200:9200
+
   redis:
     image: redis:7.2.3-alpine
     restart: always
@@ -77,8 +84,8 @@ services:
     ports:
     - 27017:27017
 
-  # username/password : guest/guest
-  rabbitmq:
+  
+  rabbitmq: # username/password : guest/guest
     image: rabbitmq:3.10.5-management
     restart: always
     container_name: rabbitmq
